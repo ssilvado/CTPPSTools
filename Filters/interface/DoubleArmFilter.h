@@ -35,7 +35,7 @@ class DoubleArmFilter : public edm::stream::EDFilter<> {
     edm::EDGetTokenT<DataTypes::VertexCollection> verticesToken;
     edm::EDGetTokenT<DataTypes::PPSRecoCollection> ppsRecoToken;
 
-    size_t tofRes;
+    unsigned int tofRes;
     bool result;
 };
 
