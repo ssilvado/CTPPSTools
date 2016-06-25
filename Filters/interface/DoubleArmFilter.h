@@ -36,6 +36,7 @@ class DoubleArmFilter : public edm::stream::EDFilter<> {
     edm::EDGetTokenT<DataTypes::PPSRecoCollection> ppsRecoToken;
 
     size_t tofRes;
+    bool result;
 };
 
 #endif

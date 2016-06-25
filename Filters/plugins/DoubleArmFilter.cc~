@@ -1,18 +1,22 @@
 #include "CTPPSTools/Filters/interface/DoubleArmFilter.h"
 
 // class members definiton
-DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& iConfig):
-  verticesToken (consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices")))
-, ppsRecoToken (consumes<PPSSpectrometer<PPSReco> >(iConfig.getParameter<edm::InputTag>("ppsReco")))
-, tofRes(iConfig.getParameter<size_t>("tofRes"))
+DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& cfg):
+  verticesToken (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
+, ppsRecoToken (consumes<DataTypes::PPSRecoCollection>(cfg.getParameter<edm::InputTag>("ppsReco")))
+, tofRes(cfg.getParameter<size_t>("tofRes"))
 {
   produces<std::vector<std::pair<size_t,size_t> > >("protons");
 }
 
-bool DoubleArmFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
 {
-  iEvent.getByToken(verticesToken, vertices); 
-  iEvent.getByToken(ppsRecoToken, ppsReco);
+
+  // initialize filter result
+  result = false;
+
+  event.getByToken(verticesToken, vertices); 
+  event.getByToken(ppsRecoToken, ppsReco);
    
   // check collections
   if( !ppsReco.isValid()
@@ -25,9 +29,9 @@ bool DoubleArmFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     << "\n filter(): Aborting.\n\n";
   }
    
-  if (!vertices->size()) result = false;
+  if (!vertices->size()) return result;
 
-  if (!ppsReco->Vertices->size()) result = false;
+  if (!ppsReco->Vertices->size()) return result;
    
   const double oPV_0 = vertices->at(0).z();
 
