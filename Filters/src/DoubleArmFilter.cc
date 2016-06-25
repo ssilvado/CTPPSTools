@@ -3,7 +3,7 @@
 // class members definiton
 DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& cfg):
   verticesToken (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
-, ppsRecoToken (consumes<DataTypes::PPSRecoCollection>(cfg.getParameter<edm::InputTag>("ppsReco")))
+, ppsRecoToken(consumes<DataTypes::PPSRecoCollection>(edm::InputTag("ppssim","PPSReco")))
 , tofRes(cfg.getParameter<unsigned int>("tofRes"))
 {
   produces<std::vector<std::pair<size_t,size_t> > >("protons");
