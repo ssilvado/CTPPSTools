@@ -1,6 +1,0 @@
-<use name="FWCore/Framework"/>
-<use name="FWCore/ParameterSet"/>
-<use name="FWCore/Utilities"/>
-<use name="DataUtils/Formats"/>
-
-<flags EDM_PLUGIN="1"/>

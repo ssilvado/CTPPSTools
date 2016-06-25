@@ -1,3 +1,6 @@
 # ignore files
 *~
 *.root
+*.pyc
+__init__.py
+
