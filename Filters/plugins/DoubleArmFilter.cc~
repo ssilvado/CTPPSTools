@@ -76,4 +76,5 @@ bool DoubleArmFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   return result;
 }
 
+// define edm plugin
 DEFINE_FWK_MODULE(DoubleArmFilter);
