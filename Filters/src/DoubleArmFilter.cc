@@ -55,13 +55,17 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
       const double deltaTof = (ppsReco->ArmB.ToFDet.at(j).ToF - ppsReco->ArmF.ToFDet.at(i).ToF)*pow(10,-9);
 
       // pps vertex z (cm)
-		  const double ZPPS_V = ((c/2.)*deltaTof)*pow(10,2);
+      const double ZPPS_V = ((c/2.)*deltaTof)*pow(10,2);
 
-		  const double zppsmax = ZPPS_V + ppsz_resolution;
-		  const double zppsmin = ZPPS_V - ppsz_resolution;	
+      const double zppsmax = ZPPS_V + ppsz_resolution;
+      const double zppsmin = ZPPS_V - ppsz_resolution;	
 	
+      std::cout << "\n filter(): zppsmax = " << zppsmax;
+      std::cout << "\n filter(): zppsmin = " << zppsmin;
+      std::cout << "\n filter(): ZPPS_V = " << ZPPS_V;
+      
       if(zppsmin < oPV_0 && oPV_0 < zppsmax) protons.push_back(std::make_pair(i,j));
-	  }
+    }
   }
 
   // at least 1 pps vertex matched to cms
