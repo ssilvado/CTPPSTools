@@ -2,11 +2,11 @@
 
 // class members definiton
 DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& cfg):
-  verticesToken (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
-, ppsRecoToken(consumes<DataTypes::PPSRecoCollection>(edm::InputTag("ppssim","PPSReco")))
+  vertices_tk (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
+, ppsreco_tk(consumes<DataTypes::PPSRecoCollection>(edm::InputTag("ppssim","PPSReco")))
 , tofRes(cfg.getParameter<unsigned int>("tofRes"))
 {
-  produces<std::vector<std::pair<size_t,size_t> > >("protons");
+  produces<std::vector<std::pair<size_t,size_t> > >("tracks");
 }
 
 bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
@@ -15,26 +15,32 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
   // initialize filter result
   result = false;
 
-  event.getByToken(verticesToken, vertices); 
-  event.getByToken(ppsRecoToken, ppsReco);
+  event.getByToken(vertices_tk, vertices); 
+  event.getByToken(ppsreco_tk, ppsreco);
    
   // check collections
   if( !vertices.isValid()
-   || !ppsReco.isValid()
+   || !ppsreco.isValid()
     ) {
     throw cms::Exception("DoubleArmFilter") << "\n +" << __FILE__ << ":" << __LINE__ << ":"
     << "\n filter(): One of the following collections could not be retrieved" 
     << "\n filter(): from root file:"
     << "\n filter(): vertices.isValid()=" << vertices.isValid()
-    << "\n filter(): ppsReco.isValid()=" << ppsReco.isValid()
+    << "\n filter(): ppsreco.isValid()=" << ppsreco.isValid()
     << "\n filter(): Aborting.\n\n";
   }
    
   if (!vertices->size()) return result;
 
-  if (!ppsReco->Vertices->size()) return result;
+  if (!ppsreco->Vertices->size()) {
+    edm::LogVerbatim("DoubleArmFilter")
+    << "\n filter(): No PPS vertex for this event."
+    << "\n filter(): skiping..."; 
+    return result;
+  }
    
-  const double oPV_0 = vertices->at(0).z();
+  // signal vertex
+  const double vertex = vertices->at(0).z();
 
   // convert to seconds
   tofRes *= pow(10,-12);
@@ -46,39 +52,35 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
   const double ppsz_resolution = ((c/2.)*sqrt(2)*tofRes)*pow(10,2);
 
 
-  std::vector<std::pair<size_t,size_t> > protons;
+  std::vector<std::pair<size_t,size_t> > tracks;
 
-  for (size_t i = 0; i < ppsReco->ArmF.ToFDet.size(); i++) {
-    for (size_t j = 0; j < ppsReco->ArmB.ToFDet.size(); j++) {
+  for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
+    for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
       // delta ToF (s)
-      const double deltaTof = (ppsReco->ArmB.ToFDet.at(j).ToF - ppsReco->ArmF.ToFDet.at(i).ToF)*pow(10,-9);
+      const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
 
       // pps vertex z (cm)
-      const double ZPPS_V = ((c/2.)*deltaTof)*pow(10,2);
+		  const double ZPPS_V = ((c/2.)*deltaTof)*pow(10,2);
 
-      const double zppsmax = ZPPS_V + ppsz_resolution;
-      const double zppsmin = ZPPS_V - ppsz_resolution;	
+		  const double zppsmax = ZPPS_V + ppsz_resolution;
+		  const double zppsmin = ZPPS_V - ppsz_resolution;	
 	
-      std::cout << "\n filter(): zppsmax = " << zppsmax;
-      std::cout << "\n filter(): zppsmin = " << zppsmin;
-      std::cout << "\n filter(): ZPPS_V = " << ZPPS_V;
-      
-      if(zppsmin < oPV_0 && oPV_0 < zppsmax) protons.push_back(std::make_pair(i,j));
-    }
+      if(zppsmin < vertex && vertex < zppsmax) tracks.push_back(std::make_pair(i,j));
+	  }
   }
 
   // at least 1 pps vertex matched to cms
-  if(protons.size()) {
+  if(tracks.size()) {
 
     // passed filter
     result = true;
 
-    std::auto_ptr<std::vector<std::pair<size_t,size_t> > > pprotons(new std::vector<std::pair<size_t,size_t> >);
-//    pprotons->reserve(protons.size());
-    *pprotons = protons;
+    std::auto_ptr<std::vector<std::pair<size_t,size_t> > > ptracks(new std::vector<std::pair<size_t,size_t> >);
+//    ptracks->reserve(tracks.size());
+    *ptracks = tracks;
 
-    event.put(pprotons,"protons");
+    event.put(ptracks,"tracks");
   }
 
 
