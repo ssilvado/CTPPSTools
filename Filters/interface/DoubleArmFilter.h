@@ -6,6 +6,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 // user include files
 #include "FWCore/Utilities/interface/Exception.h"
@@ -30,10 +31,10 @@ class DoubleArmFilter : public edm::stream::EDFilter<> {
     
     // variables
     edm::Handle<DataTypes::VertexCollection> vertices;
-    edm::Handle<DataTypes::PPSRecoCollection> ppsReco;
+    edm::Handle<DataTypes::PPSRecoCollection> ppsreco;
 	  
-    edm::EDGetTokenT<DataTypes::VertexCollection> verticesToken;
-    edm::EDGetTokenT<DataTypes::PPSRecoCollection> ppsRecoToken;
+    edm::EDGetTokenT<DataTypes::VertexCollection> vertices_tk;
+    edm::EDGetTokenT<DataTypes::PPSRecoCollection> ppsreco_tk;
 
     unsigned int tofRes;
     bool result;
