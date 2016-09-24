@@ -4,7 +4,7 @@
 DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& cfg):
   vertices_tk (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
 , ppsreco_tk(consumes<DataTypes::PPSRecoCollection>(edm::InputTag("ppssim","PPSReco")))
-, tofRes(cfg.getParameter<unsigned int>("tofRes"))
+, tofRes(cfg.getParameter<double>("tofRes")*pow(10,-12)) // in seconds
 {
   produces<std::vector<std::pair<size_t,size_t> > >("tracks");
 }
@@ -30,25 +30,19 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
     << "\n filter(): Aborting.\n\n";
   }
    
+  // check primary vertex
   if (!vertices->size()) return result;
 
-  if (!ppsreco->Vertices->size()) {
-    edm::LogVerbatim("DoubleArmFilter")
-    << "\n filter(): No PPS vertex for this event."
-    << "\n filter(): skiping..."; 
-    return result;
-  }
-   
-  // signal vertex
-  const double vertex = vertices->at(0).z();
+  // check pps vertex
+  if (!ppsreco->Vertices->size()) return result;
 
-  // convert to seconds
-  tofRes *= pow(10,-12);
+  // signal pv_z (cm)
+  const double pv_z = vertices->at(0).z();
 
   // speed of light (m/s)
   const double c = 3.*pow(10,8);
 
-  // z resolution (cm)
+  // pps_z resolution (cm)
   const double ppsz_resolution = ((c/2.)*sqrt(2)*tofRes)*pow(10,2);
 
 
@@ -60,13 +54,13 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
       // delta ToF (s)
       const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
 
-      // pps vertex z (cm)
-		  const double ZPPS_V = ((c/2.)*deltaTof)*pow(10,2);
+      // pps z (cm)
+		  const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
 
-		  const double zppsmax = ZPPS_V + ppsz_resolution;
-		  const double zppsmin = ZPPS_V - ppsz_resolution;	
+		  const double zppsmax = pps_z + ppsz_resolution;
+		  const double zppsmin = pps_z - ppsz_resolution;	
 	
-      if(zppsmin < vertex && vertex < zppsmax) tracks.push_back(std::make_pair(i,j));
+      if(zppsmin < pv_z && pv_z < zppsmax) tracks.push_back(std::make_pair(i,j));
 	  }
   }
 
