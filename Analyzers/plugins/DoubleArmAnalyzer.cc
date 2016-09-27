@@ -59,10 +59,18 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   }
    
   // check primary vertex
-  if (!vertices->size()) return result;
+  if (!vertices->size()) {
+    edm::LogWarning("DoubleArmAnalyzer") << "\n +" << __FILE__ << ":" << __LINE__ << ":"
+    << "\n analyzer(): No primary vertex in this event! Skiping event...";
+    return;
+  }
 
   // check pps vertex
-  if (!ppsreco->Vertices->size()) return result;
+  if (!ppsreco->Vertices->size()) {
+    edm::LogWarning("DoubleArmAnalyzer") << "\n +" << __FILE__ << ":" << __LINE__ << ":"
+    << "\n analyzer(): No PPS vertex in this event! Skiping event...";
+    return;
+  }
 
   // signal pv_z (cm)
   const double pv_z = vertices->at(0).z();
