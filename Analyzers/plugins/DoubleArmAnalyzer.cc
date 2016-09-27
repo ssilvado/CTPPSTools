@@ -87,7 +87,7 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   std::set<size_t> bkw_tracks;
 
   edm::LogWarning("DoubleArmAnalyzer")
-  << "\n\n analyzer(): -----------------PPS vertices-----------------\n"
+  << "\n\n analyzer(): -----------------PPS vertices-----------------\n";
 
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
@@ -111,7 +111,7 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
         << "\n analyzer(): track combination: fwd(" << i << "),bkw(" << j << ")"
         << "\n analyzer(): pv_z: " << pv_z
         << "\n analyzer(): pps_vertex_z: " << pps_z
-        << "\n analyzer(): pps_vertex_z-pv_z [mm]: " << (pps_z-pv_z)*10
+        << "\n analyzer(): pps_vertex_z-pv_z [mm]: " << (pps_z-pv_z)*10;
       }
     }
   }
