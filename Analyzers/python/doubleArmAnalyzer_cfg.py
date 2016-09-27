@@ -11,7 +11,7 @@ process.MessageLogger = cms.Service("MessageLogger"
 
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
-process.maxEvents = cms.untracked.PSet(10)
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.source = cms.Source( "PoolSource"
                             , fileNames = cms.untracked.vstring('file:file.root')
