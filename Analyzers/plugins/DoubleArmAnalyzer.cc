@@ -118,7 +118,13 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   doubles["pps_fwd_matched_tracks"] = fwd_tracks.size();
   doubles["pps_bkw_matched_tracks"] = bkw_tracks.size();
 
-
+  edm::LogWarning("DoubleArmAnalyzer")
+  << "\n analyzer(): pps_fwd_ntracks=" << doubles["pps_fwd_ntracks"]
+  << "\n analyzer(): pps_bkw_ntracks=" << doubles["pps_bkw_ntracks"]
+  << "\n analyzer(): pps_fwd_matched_tracks=" << doubles["pps_fwd_matched_tracks"]
+  << "\n analyzer(): pps_bkw_matched_tracks=" << doubles["pps_bkw_matched_tracks"]
+  << "\n analyzer(): pps_matched_vertices=" << doubles["pps_matched_vertices"];
+	
   tree->Fill();
 
 }
