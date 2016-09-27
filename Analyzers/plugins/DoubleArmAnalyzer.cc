@@ -86,6 +86,9 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   std::set<size_t> fwd_tracks;
   std::set<size_t> bkw_tracks;
 
+  edm::LogWarning("DoubleArmAnalyzer")
+  << "\n\n analyzer(): -----------------PPS vertices-----------------\n"
+
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
@@ -102,6 +105,13 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
         tracks.push_back(std::make_pair(i,j));
         fwd_tracks.insert(i); // do not duplicate entry
         bkw_tracks.insert(j); // do not duplicate entry
+
+        edm::LogWarning("DoubleArmAnalyzer")
+        << "\n analyzer(): PPS vertex matched to PV:\n"
+        << "\n analyzer(): track combination: fwd(" << i << "),bkw(" << j << ")"
+        << "\n analyzer(): pv_z: " << pv_z
+        << "\n analyzer(): pps_vertex_z: " << pps_z
+        << "\n analyzer(): pps_vertex_z-pv_z [mm]: " << (pps_z-pv_z)*10
       }
     }
   }
@@ -118,13 +128,15 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   doubles["pps_fwd_matched_tracks"] = fwd_tracks.size();
   doubles["pps_bkw_matched_tracks"] = bkw_tracks.size();
 
+
   edm::LogWarning("DoubleArmAnalyzer")
-  << "\n analyzer(): pps_fwd_ntracks=" << doubles["pps_fwd_ntracks"]
-  << "\n analyzer(): pps_bkw_ntracks=" << doubles["pps_bkw_ntracks"]
-  << "\n analyzer(): pps_fwd_matched_tracks=" << doubles["pps_fwd_matched_tracks"]
-  << "\n analyzer(): pps_bkw_matched_tracks=" << doubles["pps_bkw_matched_tracks"]
-  << "\n analyzer(): pps_matched_vertices=" << doubles["pps_matched_vertices"];
-	
+  << "\n\n analyzer(): -----------------RESULTS-----------------\n"
+  << "\n analyzer(): forward tracks  : total   =" << doubles["pps_fwd_ntracks"]
+  << "\n analyzer(): backward tracks : total   =" << doubles["pps_bkw_ntracks"]
+  << "\n analyzer(): forward tracks  : matched =" << doubles["pps_fwd_matched_tracks"]
+  << "\n analyzer(): backward tracks : matched =" << doubles["pps_bkw_matched_tracks"]
+  << "\n analyzer(): pps vertices    : matched =" << doubles["pps_matched_vertices"];
+
   tree->Fill();
 
 }
