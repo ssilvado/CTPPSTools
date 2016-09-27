@@ -85,17 +85,17 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
       const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
 
       // pps z (cm)
-		  const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
+      const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
 
-		  const double zppsmax = pps_z + ppsz_resolution;
-		  const double zppsmin = pps_z - ppsz_resolution;	
+      const double zppsmax = pps_z + ppsz_resolution;
+      const double zppsmin = pps_z - ppsz_resolution;	
 	
       if(zppsmin < pv_z && pv_z < zppsmax) {
         tracks.push_back(std::make_pair(i,j));
         fwd_tracks.insert(i); // do not duplicate entry
         bkw_tracks.insert(j); // do not duplicate entry
       }
-	  }
+    }
   }
 
 
