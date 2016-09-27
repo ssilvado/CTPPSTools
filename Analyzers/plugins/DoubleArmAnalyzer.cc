@@ -28,7 +28,7 @@ void DoubleArmAnalyzer::beginJob()
   tree->Branch("pps_matched_vertices",&doubles["pps_matched_vertices"],"pps_matched_vertices/D");
 }
 
-void WWHadronicAnalyzer::endJob() 
+void DoubleArmAnalyzer::endJob() 
 {
 
 }
