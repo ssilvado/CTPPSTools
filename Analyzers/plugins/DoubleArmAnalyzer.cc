@@ -1,4 +1,4 @@
-#include "CTPPSTools/Filters/interface/DoubleArmAnalyzer.h"
+#include "CTPPSTools/Analyzers/interface/DoubleArmAnalyzer.h"
 
 // class members definiton
 DoubleArmAnalyzer::DoubleArmAnalyzer(const edm::ParameterSet& cfg) :
