@@ -108,6 +108,11 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
 
         edm::LogWarning("DoubleArmAnalyzer")
         << "\n analyzer(): PPS vertex matched to PV:\n"
+        << "\n analyzer(): c = " << c
+        << "\n analyzer(): ppsreco->ArmF.Tracks.at(i).ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF
+        << "\n analyzer(): ppsreco->ArmB.Tracks.at(j).ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF
+        << "\n analyzer(): deltaTof = " << deltaTof
+        << "\n analyzer(): (c/2.)*deltaTof = " << (c/2.)*deltaTof
         << "\n analyzer(): track combination: fwd(" << i << "),bkw(" << j << ")"
         << "\n analyzer(): pv_z: " << pv_z
         << "\n analyzer(): pps_vertex_z: " << pps_z
