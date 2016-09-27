@@ -5,7 +5,7 @@ process = cms.Process("Demo")
 process.MessageLogger = cms.Service("MessageLogger"
                                    , destinations = cms.untracked.vstring('cout')
                                    , cout = cms.untracked.PSet(
-                                           threshold = cms.untracked.string('WARNING') 
+                                           threshold = cms.untracked.string('INFO') 
                                             )
 )
 
