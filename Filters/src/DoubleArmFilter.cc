@@ -51,17 +51,22 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
+      double fwd_tof = ppsreco->ArmF.Tracks.at(i).ToF.ToF;
+      double bkw_tof = ppsreco->ArmB.Tracks.at(j).ToF.ToF;
+
+      if(fwd_tof==0 || bkw_tof==0) continue;
+	    
       // delta ToF (s)
-      const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
+      const double deltaTof = (bkw_tof-fwd_tof)*pow(10,-9);
 
       // pps z (cm)
-		  const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
+      const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
 
-		  const double zppsmax = pps_z + ppsz_resolution;
-		  const double zppsmin = pps_z - ppsz_resolution;	
+      const double zppsmax = pps_z + ppsz_resolution;
+      const double zppsmin = pps_z - ppsz_resolution;	
 	
       if(zppsmin < pv_z && pv_z < zppsmax) tracks.push_back(std::make_pair(i,j));
-	  }
+    }
   }
 
   // at least 1 pps vertex matched to cms
