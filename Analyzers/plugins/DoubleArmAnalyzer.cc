@@ -92,6 +92,10 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
+      edm::LogWarning("DoubleArmAnalyzer")
+      << "\n analyzer(): ppsreco->ArmF.Tracks.at(" << i << ").ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF	    
+      << "\n analyzer(): ppsreco->ArmB.Tracks.at(" << j << ").ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF;
+	    
       // delta ToF (s)
       const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
 
