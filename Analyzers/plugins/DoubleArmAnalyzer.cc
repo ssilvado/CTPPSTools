@@ -86,22 +86,19 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   std::set<size_t> fwd_tracks;
   std::set<size_t> bkw_tracks;
 
-  edm::LogWarning("DoubleArmAnalyzer")
-  << "\n\n analyzer(): -----------------PPS vertices-----------------\n";
-
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
       double fwd_tof = ppsreco->ArmF.Tracks.at(i).ToF.ToF;
       double bkw_tof = ppsreco->ArmB.Tracks.at(j).ToF.ToF;
 		
-      if(fwd_tof!=0 || bkw_tof!=0)
-      edm::LogWarning("DoubleArmAnalyzer")
-      << "\n analyzer(): ppsreco->ArmF.Tracks.at(" << i << ").ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF	    
-      << "\n analyzer(): ppsreco->ArmB.Tracks.at(" << j << ").ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF;
+      if(fwd_tof==0 || bkw_tof==0) continue;
+//      edm::LogWarning("DoubleArmAnalyzer")
+//      << "\n analyzer(): ppsreco->ArmF.Tracks.at(" << i << ").ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF	    
+//      << "\n analyzer(): ppsreco->ArmB.Tracks.at(" << j << ").ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF;
 	    
       // delta ToF (s)
-      const double deltaTof = (ppsreco->ArmB.Tracks.at(j).ToF.ToF - ppsreco->ArmF.Tracks.at(i).ToF.ToF)*pow(10,-9);
+      const double deltaTof = (bkw_tof-fwd_tof)*pow(10,-9);
 
       // pps z (cm)
       const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
@@ -116,11 +113,6 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
 
         edm::LogWarning("DoubleArmAnalyzer")
         << "\n analyzer(): PPS vertex matched to PV:\n"
-        << "\n analyzer(): c = " << c
-        << "\n analyzer(): ppsreco->ArmF.Tracks.at(i).ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF
-        << "\n analyzer(): ppsreco->ArmB.Tracks.at(j).ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF
-        << "\n analyzer(): deltaTof = " << deltaTof
-        << "\n analyzer(): (c/2.)*deltaTof = " << (c/2.)*deltaTof
         << "\n analyzer(): track combination: fwd(" << i << "),bkw(" << j << ")"
         << "\n analyzer(): pv_z: " << pv_z
         << "\n analyzer(): pps_vertex_z: " << pps_z
@@ -141,14 +133,14 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   doubles["pps_fwd_matched_tracks"] = fwd_tracks.size();
   doubles["pps_bkw_matched_tracks"] = bkw_tracks.size();
 
-
-  edm::LogWarning("DoubleArmAnalyzer")
-  << "\n\n analyzer(): -----------------RESULTS-----------------\n"
-  << "\n analyzer(): forward tracks  : total   =" << doubles["pps_fwd_ntracks"]
-  << "\n analyzer(): backward tracks : total   =" << doubles["pps_bkw_ntracks"]
-  << "\n analyzer(): forward tracks  : matched =" << doubles["pps_fwd_matched_tracks"]
-  << "\n analyzer(): backward tracks : matched =" << doubles["pps_bkw_matched_tracks"]
-  << "\n analyzer(): pps vertices    : matched =" << doubles["pps_matched_vertices"];
+  if(tracks.size())
+    edm::LogWarning("DoubleArmAnalyzer")
+    << "\n\n analyzer(): -----------------RESULTS-----------------\n"
+    << "\n analyzer(): forward tracks  : total   =" << doubles["pps_fwd_ntracks"]
+    << "\n analyzer(): backward tracks : total   =" << doubles["pps_bkw_ntracks"]
+    << "\n analyzer(): forward tracks  : matched =" << doubles["pps_fwd_matched_tracks"]
+    << "\n analyzer(): backward tracks : matched =" << doubles["pps_bkw_matched_tracks"]
+    << "\n analyzer(): pps vertices    : matched =" << doubles["pps_matched_vertices"];
 
   tree->Fill();
 
