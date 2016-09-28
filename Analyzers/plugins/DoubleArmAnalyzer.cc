@@ -92,6 +92,10 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
 
+      double fwd_tof = ppsreco->ArmF.Tracks.at(i).ToF.ToF;
+      double bkw_tof = ppsreco->ArmB.Tracks.at(j).ToF.ToF;
+		
+      if(fwd_tof!=0 || bkw_tof!=0)
       edm::LogWarning("DoubleArmAnalyzer")
       << "\n analyzer(): ppsreco->ArmF.Tracks.at(" << i << ").ToF.ToF = " << ppsreco->ArmF.Tracks.at(i).ToF.ToF	    
       << "\n analyzer(): ppsreco->ArmB.Tracks.at(" << j << ").ToF.ToF = " << ppsreco->ArmB.Tracks.at(j).ToF.ToF;
