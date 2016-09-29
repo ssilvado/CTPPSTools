@@ -60,7 +60,7 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
     if(ppsreco->ArmB.Tracks.at(i).ToF.ToF==0) continue;
     vecdoubles["pps_bkw_t"]->push_back(ppsReco->ArmB.Tracks.at(i).t);
     vecdoubles["pps_bkw_xi"]push_back(ppsreco->ArmB.Tracks.at(i).xi);
-	}
+  }
 
   tree->Fill();
 
