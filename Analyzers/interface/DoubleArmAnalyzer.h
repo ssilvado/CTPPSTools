@@ -39,16 +39,12 @@ class DoubleArmAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
     edm::Service<TFileService> fs;
 
     // variables
-    edm::Handle<DataTypes::VertexCollection> vertices;
     edm::Handle<DataTypes::PPSRecoCollection> ppsreco;
 	  
-    edm::EDGetTokenT<DataTypes::VertexCollection> vertices_tk;
     edm::EDGetTokenT<DataTypes::PPSRecoCollection> ppsreco_tk;
 
-    const double tofRes;
-
     TTree * tree;
-    std::map<std::string,double> doubles;
+    std::map<std::string,std::vector<double>*> vecdoubles;
 };
 
 #endif
