@@ -20,7 +20,6 @@ process.source = cms.Source( "PoolSource"
 
 process.analyzer = cms.EDAnalyzer( 'DoubleArmAnalyzer'
                                   , vertices = cms.InputTag('offlineSlimmedPrimaryVertices')
-                                  , tofRes = cms.double(20) # picoseconds
                                  )
 
 process.p = cms.Path(process.analyzer)
