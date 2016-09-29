@@ -53,12 +53,12 @@ void DoubleArmAnalyzer::analyze(const edm::Event& event, const edm::EventSetup& 
 
   for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
     if(ppsreco->ArmF.Tracks.at(i).ToF.ToF==0) continue;
-    vecdoubles["pps_fwd_t"]->push_back(ppsReco->ArmF.Tracks.at(i).t);
+    vecdoubles["pps_fwd_t"]->push_back(ppsreco->ArmF.Tracks.at(i).t);
     vecdoubles["pps_fwd_xi"]->push_back(ppsreco->ArmF.Tracks.at(i).xi);
   }
   for (size_t i=0; i < ppsreco->ArmB.Tracks.size(); i++) {
     if(ppsreco->ArmB.Tracks.at(i).ToF.ToF==0) continue;
-    vecdoubles["pps_bkw_t"]->push_back(ppsReco->ArmB.Tracks.at(i).t);
+    vecdoubles["pps_bkw_t"]->push_back(ppsreco->ArmB.Tracks.at(i).t);
     vecdoubles["pps_bkw_xi"]push_back(ppsreco->ArmB.Tracks.at(i).xi);
   }
 
