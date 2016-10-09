@@ -5,4 +5,4 @@ doubleArmFilter = cms.EDFilter( 'DoubleArmFilter'
                                , tofRes = cms.double(20) # picoseconds
                               )
 
-MessageLogger = cms.Service("MessageLogger")
+#MessageLogger = cms.Service("MessageLogger")
