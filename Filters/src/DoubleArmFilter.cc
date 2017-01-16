@@ -4,9 +4,9 @@
 DoubleArmFilter::DoubleArmFilter(const edm::ParameterSet& cfg):
   vertices_tk (consumes<DataTypes::VertexCollection>(cfg.getParameter<edm::InputTag>("vertices")))
 , ppsreco_tk(consumes<DataTypes::PPSRecoCollection>(edm::InputTag("ppssim","PPSReco")))
-, tofRes(cfg.getParameter<double>("tofRes")*pow(10,-12)) // in seconds
+, tofRes(cfg.getParameter<double>("tofRes")*pow(10,-12)) // convert to seconds
 {
-  produces<std::vector<std::pair<size_t,size_t> > >("tracks");
+  produces<std::vector<size_t>("goldenVertices");
 }
 
 bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
@@ -30,56 +30,57 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
     << "\n filter(): Aborting.\n\n";
   }
    
-  // check primary vertex
-  if (!vertices->size()) return result;
-
-  // check pps vertex
-  if (!ppsreco->Vertices->size()) return result;
+  // at least 1 primary vertex
+  if(!vertices->size()) return result;
 
   // signal pv_z (cm)
   const double pv_z = vertices->at(0).z();
 
-  // speed of light (m/s)
-  const double c = 3.*pow(10,8);
+  // at least 1 pps vertex
+  if(!ppsreco->Vertices->size()) return result;
 
-  // pps_z resolution (cm)
-  const double ppsz_resolution = ((c/2.)*sqrt(2)*tofRes)*pow(10,2);
-
-
-  std::vector<std::pair<size_t,size_t> > tracks;
-
-  for (size_t i=0; i < ppsreco->ArmF.Tracks.size(); i++) {
-    for (size_t j=0; j < ppsreco->ArmB.Tracks.size(); j++) {
-
-      double fwd_tof = ppsreco->ArmF.Tracks.at(i).ToF.ToF;
-      double bkw_tof = ppsreco->ArmB.Tracks.at(j).ToF.ToF;
-
-      if(fwd_tof==0 || bkw_tof==0) continue;
-	    
-      // delta ToF (s)
-      const double deltaTof = (bkw_tof-fwd_tof)*pow(10,-9);
-
-      // pps z (cm)
-      const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
-
-      const double zppsmax = pps_z + ppsz_resolution;
-      const double zppsmin = pps_z - ppsz_resolution;	
-	
-      if(zppsmin < pv_z && pv_z < zppsmax) tracks.push_back(std::make_pair(i,j));
-    }
+  // select combinations using tracks with no double hit
+  std::vector<size_t> gvertices;
+  for(size_t i=0; i<ppsreco->Vertices->size(); i++) {
+    if(ppsreco->Vertices->at(i).Flag==1) gvertices.push_back(i);
   }
 
-  // at least 1 pps vertex matched to cms
-  if(tracks.size()) {
+  // match PPS vertex to CMS one
+  std::vector<size_t> golden_vertices;
+  for(size_t i=0; i<gvertices.size(); i++) {
+
+    size_t gindex = gvertices[i];
+
+    // delta ToF (ns)
+    const double deltaTof = ppsreco->ArmB.Tracks.at(ppsreco->Vertices->at(gindex).idxTrkB).ToF.ToF - ppsreco->ArmF.Tracks.at(ppsReco->Vertices->at(gindex).idxTrkF).ToF.ToF;
+    deltaTof *= pow(10,-9);// (s)
+
+    // speed of light (m/s)
+    const double c = 3.*pow(10,8);
+
+    // pps_z resolution (cm)
+    const double ppsz_resolution = ((c/2.)*sqrt(2)*tofRes)*pow(10,2);
+
+    // pps z (cm)
+    const double pps_z = ((c/2.)*deltaTof)*pow(10,2);
+
+    const double zppsmax = pps_z + ppsz_resolution;
+    const double zppsmin = pps_z - ppsz_resolution;	
+	
+    if(zppsmin < pv_z && pv_z < zppsmax) golden_vertices.push_back(gindex);
+  }
+
+  // at least 1 match
+  if(golden_vertices.size()) {
 
     // passed filter
     result = true;
 
-    std::auto_ptr<std::vector<std::pair<size_t,size_t> > > ptracks(new std::vector<std::pair<size_t,size_t> >);
-//    ptracks->reserve(tracks.size());
-    *ptracks = tracks;
+    std::auto_ptr<std::vector<size_t> > pvertices(new std::vector<size_t>);
+    // pvertices->reserve(golden_vertices.size());
+    *pvertices = golden_vertices;
 
-    event.put(ptracks,"tracks");
+    event.put(pvertices,"tracks");
   }
 
 
