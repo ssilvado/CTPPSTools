@@ -80,7 +80,7 @@ bool DoubleArmFilter::filter(edm::Event& event, const edm::EventSetup& setup)
     // pvertices->reserve(golden_vertices.size());
     *pvertices = golden_vertices;
 
-    event.put(pvertices,"tracks");
+    event.put(pvertices,"goldenVertices");
   }
 
 
